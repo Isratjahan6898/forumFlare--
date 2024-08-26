@@ -6,7 +6,7 @@ const cors = require('cors')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 // const jwt = require('jsonwebtoken')
 
-const port = process.env.PORT || 8000
+const port = process.env.PORT || 5000
 
 // middleware
 const corsOptions = {
@@ -34,9 +34,24 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+
+    const usersCollection = client.db('forumFare').collection('users');
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
+
+
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      
+      try {
+          const result = await usersCollection.insertOne(user);
+          res.status(201).send(result);
+      } catch (error) {
+          console.error('Error saving user to database:', error);
+          res.status(500).send('Error saving user to database');
+      }
+  });
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
